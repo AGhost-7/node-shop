@@ -1,7 +1,5 @@
 
 should = require('should')
-http = require('http')
-
 dbmocker = require('./utils/dbmocker')
 request = require('supertest')
 
