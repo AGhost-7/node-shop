@@ -29,21 +29,21 @@ router
       .finally(done)
   )
 )
-.get('/categories', (req, res, next) ->
+.get('/category', (req, res, next) ->
   db((err, query, done) ->
     if err then return next(err)
     query('SELECT * FROM categories')
-      .then((rs) -> res.send(rs.rows))
+      .then((rs) -> res.send(rs.rows.map((row) -> row.category)))
       .catch(next)
       .finally(done)
   )
 )
-.get('/manufacturers', (req, res, next) ->
+.get('/manufacturer', (req, res, next) ->
   db((err, query, done) ->
     if err then return next(err)
 
     query('SELECT * FROM manufacturers')
-      .then((rs) -> res.send(rs.rows))
+      .then((rs) -> res.send(rs.rows.map((row) -> row.manufacturer)))
       .catch(next)
       .finally(done)
   )
