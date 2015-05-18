@@ -20,7 +20,7 @@ before (done) ->
 describe 'products lister', ->
   it 'should give all products in application', (done) ->
     agent
-      .get('/products')
+      .get('/product')
       .expect(200)
       .expect((res) ->
         # Should have an assortment of different categories/manufacturers
@@ -36,15 +36,16 @@ describe 'products lister', ->
 
   it 'should filter by manufacturer', (done) ->
     agent
-      .get('/products')
+      .get('/product')
       .query(querystring.stringify(manufacturer: 'Yamaha'))
       .expect(200)
       .expect((res) -> !res.body.every((prod) -> prod.manufacturer == 'Yamaha'))
-
+      .end(done)
 
   it 'should filter by category', (done) ->
     agent
-      .get('/products')
+      .get('/product')
       .query(querystring.stringify(category: 'Trumpets'))
       .expect(200)
       .expect((res) -> !res.body.every((prod) -> prod.category == 'Trumpets'))
+      .end(done)

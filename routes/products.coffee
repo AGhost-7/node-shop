@@ -13,7 +13,6 @@ router
       { name: 'category', val: req.query.category }
     ]
     [sql, args] = fields.reduce(([sql, args], field) ->
-      console.log(field.name,field.val)
       if field.val?
         if args.length == 0
           sql += " WHERE #{field.name} = $#{args.length + 1}"
