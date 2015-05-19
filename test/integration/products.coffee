@@ -17,6 +17,21 @@ before (done) ->
     done()
   )
 
+describe 'single product request', (done) ->
+  it 'should give me a single result', (done) ->
+    agent
+      .get('/product/1')
+      .expect(200)
+      .expect((res) ->
+        res.body.should.have.property('manufacturer').and.property('id')
+      )
+      .end(done)
+
+  it 'it should give an error if the entry doesnt exist', (done) ->
+    agent
+      .get('/product/9999999')
+      .expect(400)
+      .end(done)
 
 describe 'products lister', ->
   it 'should give all products in application', (done) ->

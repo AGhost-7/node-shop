@@ -4,6 +4,42 @@ router = require('express').Router()
 
 
 router
+.get('/category', (req, res, next) ->
+  db((err, query, done) ->
+    if err then return next(err)
+    query('SELECT * FROM categories')
+      .then((rs) -> res.send(rs.rows.map((row) -> row.category)))
+      .catch(next)
+      .finally(done)
+  )
+)
+.get('/manufacturer', (req, res, next) ->
+  db((err, query, done) ->
+    if err then return next(err)
+
+    query('SELECT * FROM manufacturers')
+      .then((rs) ->
+        res.send(rs.rows.map((row) -> row.manufacturer))
+      )
+      .catch(next)
+      .finally(done)
+  )
+)
+.get('/:id', (req, res, next) ->
+  db((err, query, done) ->
+    if err then return next(err)
+
+    query('SELECT * FROM products WHERE id = $1', [req.params.id])
+      .then(({rows}) ->
+        if rows.length == 0
+          res.status(400).send(message: 'Item does not exist.')
+        else
+          res.send(rows[0])
+      )
+      .catch(next)
+      .finally(done)
+  )
+)
 .get('/', (req, res, next) ->
   db((err, query, done) ->
     if err then return next(err)
@@ -29,24 +65,4 @@ router
       .finally(done)
   )
 )
-.get('/category', (req, res, next) ->
-  db((err, query, done) ->
-    if err then return next(err)
-    query('SELECT * FROM categories')
-      .then((rs) -> res.send(rs.rows.map((row) -> row.category)))
-      .catch(next)
-      .finally(done)
-  )
-)
-.get('/manufacturer', (req, res, next) ->
-  db((err, query, done) ->
-    if err then return next(err)
-
-    query('SELECT * FROM manufacturers')
-      .then((rs) -> res.send(rs.rows.map((row) -> row.manufacturer)))
-      .catch(next)
-      .finally(done)
-  )
-)
-
 module.exports = router

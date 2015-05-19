@@ -2,6 +2,7 @@ CREATE TABLE users(
   id SERIAL PRIMARY KEY,
   "name" VarChar(45) NOT NULL,
   "password" TEXT NOT NULL,
+  deleted BOOLEAN NOT NULL DEFAULT FALSE,
   "email" TEXT NOT NULL
 );
 
@@ -28,15 +29,15 @@ CREATE TABLE products(
 CREATE TABLE purchases(
   id SERIAL PRIMARY KEY,
   stamp TIMESTAMP NOT NULL,
-  user_id INT NOT NULL REFERENCES users(id)
+  user_id INT NOT NULL REFERENCES users(id),
+  product_id INT NOT NULL REFERENCES products(id),
+  quantity INT NOT NULL
 );
 
--- Products either purchased or in cart.
+-- Products in cart
 CREATE TABLE held_products(
   id SERIAL PRIMARY KEY,
   quantity INT NOT NULL,
-  purchased BOOLEAN NOT NULL DEFAULT FALSE,
-  purchase_id INT NOT NULL REFERENCES purchases(id),
   user_id INT NOT NULL REFERENCES users(id),
-  product_id INT REFERENCES products(id)
+  product_id INT NOT NULL REFERENCES products(id)
 );

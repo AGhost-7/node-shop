@@ -167,7 +167,7 @@ VALUES
 ('Fender MinoAka Ukelele 0955650021','Fender','Ukuleles',139.99,2),
 ('Fender Nohea Koa Ukelele 0955640021','Fender','Ukuleles',269.99,4),
 ('Fender UUku Soprano Ukelele 0955645021','Fender','Ukuleles',119.99,2),
-('Godin MultiUke HG 36080 Natural','Godin','Ukuleles',599.00,2),
+('Godin MultiUke HG 36080 Natural','Godin','Ukuleles',599.00,1),
 ('Godin MultiUke HG 37711 Sunburst','Godin','Ukuleles',669.00,2),
 ('GRETSCH G9100 SOPRANO 2730020321','Gretsch','Ukuleles',109.00,2),
 ('Gretsch G9110 Ukelele concert 2730030321','Gretsch','Ukuleles',129.00,0),
@@ -517,3 +517,7 @@ VALUES
 ('YAMAHA THR10C','Yamaha','Electric Guitar Amps',329.99,0),
 ('YAMAHA THR10X','Yamaha','Electric Guitar Amps',329.99,2),
 ('Yamaha THR5','Yamaha','Electric Guitar Amps',219.99,3);
+
+-- fake user, password: foobaz
+INSERT INTO users("name", password, email)
+VALUES ('foobaz', '079e2e39750f06b8eb18dff9849165b1ea2dea177595bef24fa15de88d7b22c2c50ede88d31aba48da39446efb652a48b990f79e36bf7a9f02aa75deeb7ecd99e2ffc8a162bc9af8f48e79926084b6e0750f3a136a695447ced6f4a9c6accc6e761eb47d5a66d30f3e62cbdc24857de743fce6e0edde91246ca017ed700b6d99ff6beab7826d8f600fbb0230b6c647e9fffc7c6386848b85f5861ea4ef33b4cd4f2a45cae0c1032c0dc0c42ffc25da3ffb48e090193f0dc945fef06e9297f12b877c0c2e4bfa138904b98ce3f9d2b72afe6c84767f8e23abfc3a59cab34a92d3f980da84fb95d7b988a22cffc179503f7b84741fc2155b2973981ff8e323ce339a83d174ca00995571fa940847b025d0624cef14b6d1de12859be87ff3d779ba66827d791c839e463bb8e3383f0702aeeca139fbe7e4ec0b2f6347569049b50156cde7810e7d6a855d5f06f8a59e1732f3429bc2e197aa712c18190c99b9c550dfb981dee1a1b3695cbaf546cb7afed3006a71418e42f1b3fddd2d8a4316245843941e01f38c6533b3bf85ffa3c8d9d17b43bfc1098739916f8aec70c8501029c08ab6b39400076873873773eed27c134f2afee450d5f80b691d822605498ff9ddcef0a7b342d88c6129138983714593a6f38dddc585beb19613fb67de39fc3c7f9988231c4ffc4ff5fb8c6b44e411a14deedf41d2b9903158507ef3038c31c1:56578205371c830cb767e277ad18376a8e6f2bb15d2e1a4ab0e8f57250cbdc0d804a06cf90543f875b9373e113df8b5c023c06c9ec273388c4c872f460732649', 'foo@gmail.com')

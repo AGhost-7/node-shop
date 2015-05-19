@@ -9,13 +9,14 @@ router
   db((err, query, done) ->
     if err then return next(err)
 
-    query('SELECT * FROM users
+    query('
+        SELECT * FROM users
         INNER JOIN tokens ON users.id = tokens.user_id
         WHERE tokens.value = $1 AND tokens.ip = $2',
         [req.cookies.token, req.connection.remoteAddress])
       .then(({rows}) ->
         if rows.length == 0
-          res.status(400).send(message: "You are not logged in.")
+          res.status(401).send(message: "You are not logged in.")
         else
           user = rows[0]
           res.send(message: "You are logged in.", name: user.name)
@@ -32,14 +33,29 @@ router
         [req.cookies.token, req.connection.remoteAddress])
       .then(({ rows }) ->
         if rows.length == 0
-          res.status(400).send(message: "You are not logged in.")
+          res.status(401).send(message: "You are not logged in.")
         else
           userId = rows[0].user_id
-          query('DELETE FROM tokens WHERE user_id = $1', [userId])
+          query('DELETE FROM tokens WHERE user_id = $1 AND id = $2',
+              [userId, req.connection.remoteAddress])
             .then( ->
-              query('DELETE FROM users WHERE id = $1', [userId])
+              # In a realistic context, I don't think you'd ever want to delete
+              # purchase data.
+              query('UPDATE users SET deleted = true WHERE id = $1', [userId])
             )
             .then( ->
+              query('
+                WITH unheld_products AS (
+                	DELETE FROM held_products
+                	WHERE user_id = $1
+                	RETURNING quantity, product_id
+                )
+                UPDATE products
+                SET quantity = products.quantity + unheld_products.quantity
+                FROM unheld_products
+                WHERE products.id = unheld_products.product_id', [userId])
+            )
+            .then((rs) ->
               res
                 .clearCookies('token')
                 .send(message: "Your account was deleted successfully.")
@@ -66,7 +82,7 @@ router
     db((err, query, done) ->
       if err then return next(err)
 
-      query('SELECT * FROM users WHERE name = $1', [req.body.name])
+      query('SELECT * FROM users WHERE name = $1 AND deleted = false', [req.body.name])
         .then((rs) ->
           if rs.rows.length > 0
             res
@@ -78,7 +94,8 @@ router
               .then((salt) -> ncrypt.hashPw(req.body.password, salt))
               .then((hashed) ->
                 # password hash also contains the salt
-                query('INSERT INTO users("name", "password", email)
+                query('
+                    INSERT INTO users("name", "password", email)
                     VALUES($1,$2,$3) RETURNING id',
                     [req.body.name, hashed, req.body.email])
               )
@@ -88,7 +105,8 @@ router
                 )
               )
               .spread((id, tk) ->
-                query('INSERT INTO tokens("value", user_id, ip)
+                query('
+                    INSERT INTO tokens("value", user_id, ip)
                     VALUES ($1, $2, $3)',
                     [tk, id, req.connection.remoteAddress])
                   .then( ->
@@ -117,7 +135,8 @@ router
                 ncrypt
                   .randHex(64)
                   .then((tkn) ->
-                    query('INSERT INTO tokens("value", user_id, ip)
+                    query('
+                        INSERT INTO tokens("value", user_id, ip)
                         VALUES ($1, $2, $3)
                         RETURNING "value"',
                         [tkn, rows[0].id, req.connection.remoteAddress])
@@ -145,7 +164,7 @@ router
         query('DELETE FROM tokens WHERE "value" = $1', [req.cookies.token])
           .then((rs) ->
             res.clearCookie('token')
-            
+
             if rs.rowCount > 0
               res.send(message: "Logged out.")
             else
