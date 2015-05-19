@@ -2,18 +2,23 @@ should = require('should')
 request = require('supertest')
 dbmocker = require('./utils/dbmocker')
 querystring = require('querystring')
+#http = require('http')
 
 app = undefined
+server = undefined
 agent = undefined
 
 # I don't want a clean app for each bullet point, but starting a file of tests
 # with a clean DB is going to save me some headaches.
 
 before (done) ->
+  console.log('products - before hook called')
   process.env['testMode'] = true
   dbmocker( ->
+    console.log('products - database cleaned')
     app = require('../../app')
-    agent = request.agent(app)
+    server = app.listen(0)
+    agent = request.agent(server)
     done()
   )
 
@@ -23,7 +28,7 @@ describe 'single product request', (done) ->
       .get('/product/1')
       .expect(200)
       .expect((res) ->
-        res.body.should.have.property('manufacturer').and.property('id')
+        res.body.should.have.properties(['manufacturer', 'id'])
       )
       .end(done)
 
@@ -97,3 +102,8 @@ describe 'fields lister', ->
         res.body.should.containDeep(['Ukuleles', 'Keyboards'])
       )
       .end(done)
+
+
+after (done) ->
+  console.log('products - after hook called')
+  server.close(done)

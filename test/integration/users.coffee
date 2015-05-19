@@ -2,17 +2,23 @@
 should = require('should')
 dbmocker = require('./utils/dbmocker')
 request = require('supertest')
+http = require('http')
+
 
 app = undefined
+server = undefined
 agent = undefined
 
 # I don't want a clean app for each bullet point, but starting a file of tests
 # with a clean DB is going to save me some headaches.
 before (done) ->
   process.env['testMode'] = true
+  console.log('users - before hook called')
   dbmocker( ->
+    console.log('users - database cleaned')
     app = require('../../app')
-    agent = request.agent(app)
+    server = app.listen(0)
+    agent = request.agent(server)
     done()
   )
 
@@ -81,4 +87,7 @@ describe 'delete api', ->
       .expect(401)
       .end(done)
 
-      
+
+after (done) ->
+  console.log('users - after hook called')
+  server.close(done)

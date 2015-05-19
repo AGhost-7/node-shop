@@ -2,23 +2,32 @@ should = require('should')
 request = require('supertest')
 dbmocker = require('./utils/dbmocker')
 querystring = require('querystring')
+http = require('http')
+
 
 app = undefined
+server = undefined
 agent = undefined
 products = undefined
 one = undefined
 three = undefined
 
 before (done) ->
+  console.log('carts - before hook called')
   process.env['testMode'] = true
   dbmocker( ->
+    console.log('carts - database cleaned')
     app = require('../../app')
-    agent = request.agent(app)
+    #server = http.createServer(app)
+    server = app.listen(0)
+    agent = request.agent(server)
+
     agent
       .get('/product')
       .query(querystring.stringify(manufacturer: 'Godin'))
       .end((err, res) ->
         if err then throw err
+        #console.log('products list fetched')
         products = res.body
         one = products.reduce((accu, elem) ->
           if elem.quantity == 1 then elem else accu
@@ -26,12 +35,16 @@ before (done) ->
         three = products.reduce((accu, elem) ->
           if elem.quantity == 3 then elem else accu
         )
+
         # Just need to be logged in as a user
         agent
           .post('/user/login')
           .type('form')
           .send(name: 'foobaz', password: 'foobaz')
-          .end(done)
+          .end((err, res) ->
+            #console.log('now logged in')
+            done()
+          )
       )
   )
 
@@ -136,10 +149,6 @@ describe 'Cart removal', ->
       )
 
 
-
-
-
-
-
-
-#
+after (done) ->
+  console.log('carts - after hook called')
+  server.close(done)

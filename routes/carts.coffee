@@ -91,7 +91,6 @@ router
           if rows.length == 0
             res.status(401).send(message: 'You are not logged in.')
           else
-            console.log('deletion data: ', rows[0].user_id, id)
             query('
                 WITH unheld_products AS (
                 	DELETE FROM held_products
