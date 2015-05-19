@@ -67,3 +67,18 @@ describe 'login api', ->
       .get('/user/')
       .expect(200)
       .end(done)
+
+describe 'delete api', ->
+  it 'should return ok if Im logged in to delete my account', (done) ->
+    agent
+      .delete('/user')
+      .expect(200)
+      .end(done)
+
+  it 'should log me out completely', (done) ->
+    agent
+      .get('/user')
+      .expect(401)
+      .end(done)
+
+      

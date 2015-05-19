@@ -75,6 +75,8 @@ describe 'Adding stuff to cart', ->
       )
       .end(done)
 
+cartItems = undefined
+
 describe 'Viewing cart', ->
 
   it 'should display pending purchases', (done) ->
@@ -87,16 +89,57 @@ describe 'Viewing cart', ->
           { product_id: one.id, quantity: 1 }
           { product_id: three.id, quantity: 3 }
         ])
+        cartItems = res.body
       )
       .end(done)
 
-describe.skip 'Cart removal', ->
-  before (done) ->
+describe 'Cart removal', ->
 
-  it 'should remove from my cart the entry', (done) ->
+  it 'should gimme a 200', (done) ->
     agent
-      .delete('/cart')
+      .delete('/cart/' + cartItems[0].id)
+      .expect(200)
+      .end(done)
 
-  it 'should increment the products', (done) ->
+  it 'should no longer be in the cart list', (done) ->
+    agent
+      .get('/cart')
+      .expect(200)
+      .expect((res) ->
+        res.body.should.not.containDeep([ { id: cartItems[0].id } ])
+      )
+      .end(done)
 
-  it 'should re-increment products if account gets deleted', (done) ->
+  it 'should increase the products', (done) ->
+    agent
+      .get('/product/' + cartItems[0].product_id)
+      .expect(200)
+      .expect((res) ->
+        res.body.quantity.should.equal(cartItems[0].quantity)
+      )
+      .end(done)
+
+  it 'should increase products if account gets deleted', (done) ->
+    agent
+      .delete('/user')
+      .expect(200)
+      .end((err, res) ->
+        if err then return done(err)
+
+        agent
+          .get('/product/' + cartItems[1].product_id)
+          .expect(200)
+          .expect((res) ->
+            res.body.quantity.should.equal(cartItems[1].quantity)
+          )
+          .end(done)
+      )
+
+
+
+
+
+
+
+
+#

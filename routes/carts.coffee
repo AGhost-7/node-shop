@@ -85,17 +85,18 @@ router
     else if not token?
       res.status(401).send(message: 'You are not logged in.')
     else
-      query('SELECT * FROM tokens WHERE value = $1 AND id = $2',
+      query('SELECT * FROM tokens WHERE value = $1 AND ip = $2',
           [token, req.connection.remoteAddress])
         .then(({rows}) ->
           if rows.length == 0
             res.status(401).send(message: 'You are not logged in.')
           else
+            console.log('deletion data: ', rows[0].user_id, id)
             query('
                 WITH unheld_products AS (
                 	DELETE FROM held_products
                 	WHERE user_id = $1 AND id = $2
-                  RETURNING id
+                  RETURNING quantity, product_id
                 )
                 UPDATE products
                 SET quantity = products.quantity + unheld_products.quantity

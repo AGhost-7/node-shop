@@ -36,7 +36,7 @@ router
           res.status(401).send(message: "You are not logged in.")
         else
           userId = rows[0].user_id
-          query('DELETE FROM tokens WHERE user_id = $1 AND id = $2',
+          query('DELETE FROM tokens WHERE user_id = $1 AND ip = $2',
               [userId, req.connection.remoteAddress])
             .then( ->
               # In a realistic context, I don't think you'd ever want to delete
@@ -57,7 +57,7 @@ router
             )
             .then((rs) ->
               res
-                .clearCookies('token')
+                .clearCookie('token')
                 .send(message: "Your account was deleted successfully.")
             )
       )
