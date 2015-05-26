@@ -3,91 +3,87 @@ should = require('should')
 dbmocker = require('./utils/dbmocker')
 request = require('supertest')
 http = require('http')
+pg = require('pg')
 
+describe 'users', ->
 
-app = undefined
-server = undefined
-agent = undefined
-
-# I don't want a clean app for each bullet point, but starting a file of tests
-# with a clean DB is going to save me some headaches.
-before (done) ->
-  process.env['testMode'] = true
-  console.log('users - before hook called')
-  dbmocker( ->
-    console.log('users - database cleaned')
-    app = require('../../app')
-    server = app.listen(0)
-    agent = request.agent(server)
-    done()
-  )
-
-describe 'first time registration', ->
-
-  it 'should slap my hand if I dont hand over a proper email', (done) ->
-    agent
-      .post('/user/register')
-      .type('form')
-      .send(name: 'foobar', password: 'foobar', email: 'foobar.com')
-      .expect(400)
-      .end(done)
-
-  it 'should return ok when registering with a valid form', (done) ->
-    agent
-      .post('/user/register')
-      .type('form')
-      .send(name: 'foobar', password: 'foobar', email: 'foobar@gmail.com')
-      .expect(200)
-      .end(done)
-
-  it 'should make me logged in', (done) ->
-    agent
-      .get('/user')
-      .expect(200)
-      .end(done)
-
-describe 'login api', ->
+  # I don't want a clean app for each bullet point, but starting a file of tests
+  # with a clean DB is going to save me some headaches.
   before (done) ->
-    agent
-      .post('/user/logout')
-      .end(done)
+    process.env['testMode'] = true
+    dbmocker( =>
+      app = require('../../app')
+      @server = app.listen(0)
+      @agent = request.agent(app)
+      done()
+    )
 
-  it 'shouldn\'t let me log in without proper creds', (done) ->
-    agent
-      .post('/user/login')
-      .type('form')
-      .send(name: 'foobar', password:'i dont know my password')
-      .expect(400)
-      .end(done)
+  describe 'first time registration', ->
 
-  it 'should let log me in if I have the valid password', (done) ->
-    agent
-      .post('/user/login')
-      .type('form')
-      .send(name: 'foobar', password: 'foobar')
-      .expect(200)
-      .end(done)
+    it 'should slap my hand if I dont hand over a proper email', (done) ->
+      @agent
+        .post('/user/register')
+        .type('form')
+        .send(name: 'foobar', password: 'foobar', email: 'foobar.com')
+        .expect(400)
+        .end(done)
 
-  it 'should set the user token so that I can be identified', (done) ->
-    agent
-      .get('/user/')
-      .expect(200)
-      .end(done)
+    it 'should return ok when registering with a valid form', (done) ->
+      @agent
+        .post('/user/register')
+        .type('form')
+        .send(name: 'foobar', password: 'foobar', email: 'foobar@gmail.com')
+        .expect(200)
+        .end(done)
 
-describe 'delete api', ->
-  it 'should return ok if Im logged in to delete my account', (done) ->
-    agent
-      .delete('/user')
-      .expect(200)
-      .end(done)
+    it 'should make me logged in', (done) ->
+      @agent
+        .get('/user')
+        .expect(200)
+        .end(done)
 
-  it 'should log me out completely', (done) ->
-    agent
-      .get('/user')
-      .expect(401)
-      .end(done)
+  describe 'login api', ->
+    before (done) ->
+      @agent
+        .post('/user/logout')
+        .end(done)
+
+    it 'shouldn\'t let me log in without proper creds', (done) ->
+      @agent
+        .post('/user/login')
+        .type('form')
+        .send(name: 'foobar', password:'i dont know my password')
+        .expect(400)
+        .end(done)
+
+    it 'should let log me in if I have the valid password', (done) ->
+      @agent
+        .post('/user/login')
+        .type('form')
+        .send(name: 'foobar', password: 'foobar')
+        .expect(200)
+        .end(done)
+
+    it 'should set the user token so that I can be identified', (done) ->
+      @agent
+        .get('/user/')
+        .expect(200)
+        .end(done)
+
+  describe 'delete api', ->
+    it 'should return ok if Im logged in to delete my account', (done) ->
+      @agent
+        .delete('/user')
+        .expect(200)
+        .end(done)
+
+    it 'should log me out completely', (done) ->
+      @agent
+        .get('/user')
+        .expect(401)
+        .end(done)
 
 
-after (done) ->
-  console.log('users - after hook called')
-  server.close(done)
+  after (done) ->
+    pg.end()
+    @server.close(done)

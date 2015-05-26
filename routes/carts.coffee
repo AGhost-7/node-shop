@@ -56,7 +56,7 @@ router
 .get('/', (req, res, next) ->
   db((err, query, done) ->
     if err then next(err)
-
+    console.log('hello carts!')
     token = req.cookies.token
     if not token?
       res.status(401).send(message: 'You must be logged in.')

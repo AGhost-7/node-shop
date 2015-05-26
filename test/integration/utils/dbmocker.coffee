@@ -91,3 +91,4 @@ module.exports = (done) ->
       )
     )
   )
+module.exports.end = pg.end
