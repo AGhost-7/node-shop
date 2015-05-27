@@ -1,21 +1,18 @@
 router = require('express').Router()
-db = require('../utils/db')
+db = require('../utils/db2')
 
 router
 .post('/:product/:quantity', (req, res, next) ->
-  db((err, query, done) ->
-    if err then return next(err)
+  {params: {product,quantity}, cookies: {token}} = req
 
-    {params: {product,quantity}, cookies: {token}} = req
-
-    if not product?
-      res.status(400).send(message: 'Product id required.')
-    else if not quantity? or quantity < 1
-      res.status(400).send(message: 'You need to specify a quantity.')
-    else if not token
-      res.status(400).send(message: 'You must me logged in to access your cart.')
-    else
-
+  if not product?
+    res.status(400).send(message: 'Product id required.')
+  else if not quantity? or quantity < 1
+    res.status(400).send(message: 'You need to specify a quantity.')
+  else if not token
+    res.status(400).send(message: 'You must me logged in to access your cart.')
+  else
+    db((query) ->
       # to add the product to the cart, we must decrement product count,
       # therefore we must check if product is in stock.
       query('SELECT * FROM products WHERE id = $1', [product])
@@ -25,7 +22,6 @@ router
           else if rows[0].quantity - quantity < 0
             res.status(400).send(message: 'Not enough in stock.')
           else
-
             query('SELECT * FROM tokens WHERE value = $1 AND ip = $2',
                 [token, req.connection.remoteAddress])
               .then(({rows}) ->
@@ -49,14 +45,12 @@ router
                     )
               )
         )
-        .catch(next)
-        .finally(done)
-  )
+
+    )
+    .catch(next)
 )
 .get('/', (req, res, next) ->
-  db((err, query, done) ->
-    if err then next(err)
-    console.log('hello carts!')
+  db((query) ->
     token = req.cookies.token
     if not token?
       res.status(401).send(message: 'You must be logged in.')
@@ -71,20 +65,22 @@ router
                 [rows[0].user_id])
               .then(({rows}) -> res.status(200).send(rows))
         )
-        .catch(next)
-        .finally(done)
+
   )
+  .catch(next)
 )
 .delete('/:id', (req, res, next) ->
-  db((err, query, done) ->
-    if err then next(err)
-
-    {params: {id}, cookies: {token}} = req
-    if not id?
-      res.status(400).send(message: 'Entry to remove from cart must be specified.')
-    else if not token?
-      res.status(401).send(message: 'You are not logged in.')
-    else
+  {params: {id}, cookies: {token}} = req
+  if not id?
+    res
+      .status(400)
+      .send(message: 'Entry to remove from cart must be specified.')
+  else if not token?
+    res
+      .status(401)
+      .send(message: 'You are not logged in.')
+  else
+    db((query) ->
       query('SELECT * FROM tokens WHERE value = $1 AND ip = $2',
           [token, req.connection.remoteAddress])
         .then(({rows}) ->
@@ -111,9 +107,8 @@ router
                     .send(message: 'Entry was not found and could not be removed.')
               )
         )
-        .catch(next)
-        .finally(done)
-  )
+    )
+    .catch(next)
 )
 
 

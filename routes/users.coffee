@@ -1,34 +1,30 @@
 express = require('express')
 router = express.Router()
-db = require('../utils/db')
+#db = require('../utils/db')
+db = require('../utils/db2')
 ncrypt = require('../utils/ncrypt')
 
 
 router
 .get('/', (req, res, next) ->
-  db((err, query, done) ->
-    if err then return next(err)
-
+  db((query) ->
     query('
         SELECT * FROM users
         INNER JOIN tokens ON users.id = tokens.user_id
         WHERE tokens.value = $1 AND tokens.ip = $2',
         [req.cookies.token, req.connection.remoteAddress])
-      .then(({rows}) ->
-        if rows.length == 0
-          res.status(401).send(message: "You are not logged in.")
-        else
-          user = rows[0]
-          res.send(message: "You are logged in.", name: user.name)
-      )
-      .catch(next)
-      .finally(done)
   )
+  .then(({rows}) ->
+    if rows.length == 0
+      res.status(401).send(message: "You are not logged in.")
+    else
+      user = rows[0]
+      res.send(message: "You are logged in.", name: user.name)
+  )
+  .catch(next)
 )
 .delete('/', (req, res, next) ->
-  db((err, query, done) ->
-    if err then return next(err)
-
+  db((query) ->
     query('SELECT * FROM tokens WHERE "value" = $1 AND ip = $2',
         [req.cookies.token, req.connection.remoteAddress])
       .then(({ rows }) ->
@@ -61,11 +57,11 @@ router
                 .send(message: "Your account was deleted successfully.")
             )
       )
-      .catch(next)
-      .finally(done)
   )
+  .catch(next)
 )
 .post('/register', (req, res, next) ->
+
   if not req.body.name? or req.body.name.length < 5
     res
       .status(400)
@@ -79,10 +75,9 @@ router
       .status(400)
       .send(message: "Email is invalid")
   else
-    db((err, query, done) ->
-      if err then return next(err)
-
-      query('SELECT * FROM users WHERE name = $1 AND deleted = false', [req.body.name])
+    db((query) ->
+      query('SELECT * FROM users WHERE name = $1 AND deleted = false',
+          [req.body.name])
         .then((rs) ->
           if rs.rows.length > 0
             res
@@ -115,14 +110,11 @@ router
               )
 
         )
-        .catch(next)
-        .finally(done)
     )
+    .catch(next)
 )
 .post('/login', (req, res, next) ->
-  db((err, query, done) ->
-    if err then return next(err)
-
+  db((query) ->
     query('SELECT * FROM users WHERE "name" = $1', [req.body.name])
       .then(({rows}) ->
         if rows.length == 0
@@ -150,31 +142,24 @@ router
                 res.status(400).send(message: "Failed authentication.")
             )
       )
-      .catch(next)
-      .finally(done)
   )
+  .catch(next)
 )
 .post('/logout', (req, res, next) ->
     if not req.cookies.token?
       res.status(400).send(message: "You are not logged in.")
     else
-      db((err, query, done) ->
-        if err then return next(err)
-
+      db((query) ->
         query('DELETE FROM tokens WHERE "value" = $1', [req.cookies.token])
-          .then((rs) ->
-            res.clearCookie('token')
-
-            if rs.rowCount > 0
-              res.send(message: "Logged out.")
-            else
-              res.send(message: "Your session is not valid.")
-
-
-          )
-          .catch(next)
-          .finally(done)
       )
+      .then((rs) ->
+        res.clearCookie('token')
+        if rs.rowCount > 0
+          res.send(message: "Logged out.")
+        else
+          res.send(message: "Your session is not valid.")
+      )
+      .catch(next)
 )
 
 module.exports = router

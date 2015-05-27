@@ -26,13 +26,28 @@ CREATE TABLE products(
   CHECK (price > 0)
 );
 
+CREATE TABLE receipts(
+  id SERIAL PRIMARY KEY,
+  stamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  total NUMERIC(10, 2) NOT NULL,
+  subtotal NUMERIC(10, 2) NOT NULL,
+  user_id INT NOT NULL REFERENCES users(id),
+  -- e.g., google wallet, paypal, credit
+  method VARCHAR(45) NOT NULL,
+  CHECK (subtotal < total),
+  CHECK (subtotal > 0)
+);
+
 CREATE TABLE purchases(
   id SERIAL PRIMARY KEY,
-  stamp TIMESTAMP NOT NULL,
-  user_id INT NOT NULL REFERENCES users(id),
+  --stamp TIMESTAMP NOT NULL,
+  --user_id INT NOT NULL REFERENCES users(id),
+  receipt_id INT NOT NULL REFERENCES receipts(id),
   product_id INT NOT NULL REFERENCES products(id),
   quantity INT NOT NULL
 );
+
+
 
 -- Products in cart
 CREATE TABLE held_products(

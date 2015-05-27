@@ -2,7 +2,6 @@ should = require('should')
 request = require('supertest')
 dbmocker = require('./utils/dbmocker')
 querystring = require('querystring')
-http = require('http')
 pg = require('pg')
 
 
@@ -46,8 +45,6 @@ describe 'carts', ->
             )
         )
     )
-
-
 
   describe 'Adding stuff to cart', ->
 
@@ -150,11 +147,4 @@ describe 'carts', ->
 
   after (done) ->
     pg.end()
-
     @server.close(done)
-
-    #server.close((err) ->
-    #  console.log(err)
-    #  console.log('server closed')
-    #  done()
-    #)
