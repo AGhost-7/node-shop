@@ -4,6 +4,7 @@ router = express.Router()
 db = require('../utils/db2')
 ncrypt = require('../utils/ncrypt')
 
+User = require('../utils/user')
 
 router
 .get('/', (req, res, next) ->
@@ -25,39 +26,33 @@ router
 )
 .delete('/', (req, res, next) ->
   db((query) ->
-    query('SELECT * FROM tokens WHERE "value" = $1 AND ip = $2',
-        [req.cookies.token, req.connection.remoteAddress])
-      .then(({ rows }) ->
-        if rows.length == 0
-          res.status(401).send(message: "You are not logged in.")
-        else
-          userId = rows[0].user_id
-          query('DELETE FROM tokens WHERE user_id = $1 AND ip = $2',
-              [userId, req.connection.remoteAddress])
-            .then( ->
-              # In a realistic context, I don't think you'd ever want to delete
-              # purchase data.
-              query('UPDATE users SET deleted = true WHERE id = $1', [userId])
-            )
-            .then( ->
-              query('
-                  WITH unheld_products AS (
-                  	DELETE FROM held_products
-                  	WHERE user_id = $1
-                  	RETURNING quantity, product_id
-                  )
-                  UPDATE products
-                  SET quantity = products.quantity + unheld_products.quantity
-                  FROM unheld_products
-                  WHERE products.id = unheld_products.product_id
-                  ', [userId])
-            )
-            .then((rs) ->
-              res
-                .clearCookie('token')
-                .send(message: "Your account was deleted successfully.")
-            )
-      )
+    User.ifLoggedIn(req, res, query, (userId) ->
+      query('DELETE FROM tokens WHERE user_id = $1 AND ip = $2',
+          [userId, req.connection.remoteAddress])
+        .then( ->
+          # In a realistic context, I don't think you'd ever want to delete
+          # purchase data.
+          query('UPDATE users SET deleted = true WHERE id = $1', [userId])
+        )
+        .then( ->
+          query('
+              WITH unheld_products AS (
+                DELETE FROM held_products
+                WHERE user_id = $1
+                RETURNING quantity, product_id
+              )
+              UPDATE products
+              SET quantity = products.quantity + unheld_products.quantity
+              FROM unheld_products
+              WHERE products.id = unheld_products.product_id
+              ', [userId])
+        )
+        .then((rs) ->
+          res
+            .clearCookie('token')
+            .send(message: "Your account was deleted successfully.")
+        )
+    )
   )
   .catch(next)
 )
@@ -151,14 +146,16 @@ router
       res.status(400).send(message: "You are not logged in.")
     else
       db((query) ->
-        query('DELETE FROM tokens WHERE "value" = $1', [req.cookies.token])
-      )
-      .then((rs) ->
-        res.clearCookie('token')
-        if rs.rowCount > 0
-          res.send(message: "Logged out.")
-        else
-          res.send(message: "Your session is not valid.")
+        User.ifLoggedIn(req, res, query, (userId) ->
+          query('DELETE FROM tokens WHERE "value" = $1', [req.cookies.token])
+          .then((rs) ->
+            res.clearCookie('token')
+            if rs.rowCount > 0
+              res.send(message: "Logged out.")
+            else
+              res.status(401).send(message: "Your session is not valid.")
+          )
+        )
       )
       .catch(next)
 )

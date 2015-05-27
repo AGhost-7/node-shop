@@ -1,8 +1,6 @@
 db = require('../utils/db2')
 router = require('express').Router()
 
-
-
 router
 .get('/category', (req, res, next) ->
   db((query) ->
