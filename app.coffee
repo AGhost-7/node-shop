@@ -27,6 +27,7 @@ app
   .use('/user', require('./routes/users'))
   .use('/product', require('./routes/products'))
   .use('/cart', require('./routes/carts'))
+  .use('/purchase', require('./routes/purchases'))
 
 # If nothing found... something went wrong
 app.use((req, res, next) ->

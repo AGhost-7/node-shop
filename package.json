@@ -7,7 +7,7 @@
     "dev": "BLUEBIRD_DEBUG=1 nodemon -e coffee --ignore /public --ignore /test",
     "unit": "mocha test/unit",
     "integration": "mocha test/integration",
-    "debug": "coffee -mc */*.coffee && node-debug app.js"    
+    "debug": "coffee -mc */*.coffee && node-debug app.js"
   },
   "dependencies": {
     "bluebird": "^2.9.25",
@@ -15,6 +15,7 @@
     "cookie-parser": "~1.3.4",
     "debug": "~2.1.1",
     "express": "~4.12.2",
+    "lodash": "^3.9.3",
     "morgan": "~1.5.1",
     "pg": "^4.3.0",
     "serve-favicon": "~2.2.0"

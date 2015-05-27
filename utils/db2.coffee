@@ -248,7 +248,7 @@ conString =
   else
     'postgres://postgres:postgres@localhost:5432/node_shop'
 
-# (QueryFunction => Promise[A] Or A): Promise[A]
+# (QueryFunction => Promise[A]): Promise[A]
 
 ### Example:
 db((query) ->
@@ -264,11 +264,11 @@ queryWith = (con) ->
       con.query(arg1, arg2, (err, rs) ->
         if err
           if typeof arg1 == 'object'
-            err.sqlQuery = sql.text
-            err.sqlArgs = sql.values
+            err.sqlQuery = arg1.text
+            err.sqlArgs = arg1.values
           else
             err.sqlQuery = arg1
-            if args then err.sqlArgs = arg2
+            if arg2 then err.sqlArgs = arg2
           if err.code?
             code = errorCodes[err.code]
             err.errorCodeName = code.name
@@ -294,38 +294,3 @@ module.exports = (whenConnected) ->
         resolve(result)
     )
   )
-
-###
-module.exports = (whenConnected) ->
-  pg.connect(conString, (err, con, done) ->
-    if err
-      if err.code?
-        code = errorCodes[err.code]
-        err.errorCodeName = code.name
-        err.errorClass = code.class
-      whenConnected(err)
-    else
-      query = (sql, args) ->
-        new Promise((resolve, reject) ->
-          con.query(sql, args, (err, rs) ->
-            if err
-              if typeof sql == 'object'
-                err.sqlQuery = sql.text
-                err.sqlArgs = sql.values
-              else
-                err.sqlQuery = sql
-                if args then err.sqlArgs = args
-              if err.code?
-                code = errorCodes[err.code]
-                err.errorCodeName = code.name
-                err.errorClass = code.class
-              reject(err)
-            else
-              resolve(rs)
-          )
-        )
-
-      whenConnected(undefined, query, done)
-
-  )
-###

@@ -11,8 +11,8 @@ router
     query('
         SELECT * FROM users
         INNER JOIN tokens ON users.id = tokens.user_id
-        WHERE tokens.value = $1 AND tokens.ip = $2',
-        [req.cookies.token, req.connection.remoteAddress])
+        WHERE tokens.value = $1 AND tokens.ip = $2
+        ', [req.cookies.token, req.connection.remoteAddress])
   )
   .then(({rows}) ->
     if rows.length == 0
@@ -41,15 +41,16 @@ router
             )
             .then( ->
               query('
-                WITH unheld_products AS (
-                	DELETE FROM held_products
-                	WHERE user_id = $1
-                	RETURNING quantity, product_id
-                )
-                UPDATE products
-                SET quantity = products.quantity + unheld_products.quantity
-                FROM unheld_products
-                WHERE products.id = unheld_products.product_id', [userId])
+                  WITH unheld_products AS (
+                  	DELETE FROM held_products
+                  	WHERE user_id = $1
+                  	RETURNING quantity, product_id
+                  )
+                  UPDATE products
+                  SET quantity = products.quantity + unheld_products.quantity
+                  FROM unheld_products
+                  WHERE products.id = unheld_products.product_id
+                  ', [userId])
             )
             .then((rs) ->
               res
@@ -91,8 +92,8 @@ router
                 # password hash also contains the salt
                 query('
                     INSERT INTO users("name", "password", email)
-                    VALUES($1,$2,$3) RETURNING id',
-                    [req.body.name, hashed, req.body.email])
+                    VALUES($1,$2,$3) RETURNING id
+                    ', [req.body.name, hashed, req.body.email])
               )
               .then(({rows: [row]}) ->
                 ncrypt.randHex(64).then((tk) ->
@@ -102,8 +103,8 @@ router
               .spread((id, tk) ->
                 query('
                     INSERT INTO tokens("value", user_id, ip)
-                    VALUES ($1, $2, $3)',
-                    [tk, id, req.connection.remoteAddress])
+                    VALUES ($1, $2, $3)
+                    ', [tk, id, req.connection.remoteAddress])
                   .then( ->
                     res.cookie('token', tk).send(message: 'Success')
                   )
@@ -130,8 +131,8 @@ router
                     query('
                         INSERT INTO tokens("value", user_id, ip)
                         VALUES ($1, $2, $3)
-                        RETURNING "value"',
-                        [tkn, rows[0].id, req.connection.remoteAddress])
+                        RETURNING "value"
+                        ', [tkn, rows[0].id, req.connection.remoteAddress])
                   )
                   .then(({rows: [row]}) ->
                     res

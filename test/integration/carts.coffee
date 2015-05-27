@@ -46,7 +46,7 @@ describe 'carts', ->
         )
     )
 
-  describe 'Adding stuff to cart', ->
+  describe 'Adding stuff', ->
 
     it 'should allow me to add a valid item to my cart', (done) ->
       @agent
@@ -86,23 +86,23 @@ describe 'carts', ->
 
   cartItems = undefined
 
-  describe 'Viewing cart', ->
+  describe 'Viewing', ->
 
     it 'should display pending purchases', (done) ->
       @agent
         .get('/cart')
         .expect(200)
-        .expect((res) ->
-          res.body.length.should.equal(2)
-          res.body.should.containDeep([
+        .expect(({ body: { items } }) ->
+          items.length.should.equal(2)
+          items.should.containDeep([
             { product_id: one.id, quantity: 1 }
             { product_id: three.id, quantity: 3 }
           ])
-          cartItems = res.body
+          cartItems = items
         )
         .end(done)
 
-  describe 'Cart removal', ->
+  describe 'removal', ->
 
     it 'should gimme a 200', (done) ->
       @agent
@@ -115,7 +115,7 @@ describe 'carts', ->
         .get('/cart')
         .expect(200)
         .expect((res) ->
-          res.body.should.not.containDeep([ { id: cartItems[0].id } ])
+          res.body.items.should.not.containDeep([ { id: cartItems[0].id } ])
         )
         .end(done)
 
