@@ -50,7 +50,7 @@ router
   )
 )
 .post('/:product/:quantity', (req, res, next) ->
-  {params: {product,quantity}, cookies: {token}} = req
+  {params: {product, quantity}} = req
 
   if not product?
     res.status(400).send(message: 'Product id required.')

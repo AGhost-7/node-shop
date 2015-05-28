@@ -31,6 +31,7 @@ CREATE TABLE receipts(
   stamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   total NUMERIC(10, 2) NOT NULL,
   subtotal NUMERIC(10, 2) NOT NULL,
+  tax NUMERIC(10, 2) NOT NULL,
   user_id INT NOT NULL REFERENCES users(id),
   -- e.g., google wallet, paypal, credit
   method VARCHAR(45) NOT NULL,
