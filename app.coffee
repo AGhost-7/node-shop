@@ -7,21 +7,25 @@ bodyParser = require('body-parser')
 
 app = express()
 
-if not process.env.testMode?
+if process.env.MODE != 'test'
   app.use(require('morgan')('dev'))
 
 app
   .use(bodyParser.json())
   .use(bodyParser.urlencoded({extended: true}))
   .use(require('cookie-parser')())
-  .use(express.static(path.join(__dirname, 'public')))
+  .use('/html', express.static(path.join(__dirname, 'html')))
 
-# Routes
-app.get('/', (req, res) ->
-  stream = fs.createReadStream(path.join(__dirname, 'index.html'))
-  res.header('Content-Type', 'text/html')
-  stream.pipe(res)
-)
+fileLoader = (url, dir, type) ->
+  app.get(url, (req, res) ->
+    stream = fs.createReadStream(path.join(__dirname, dir))
+    res.header('Content-Type', type)
+    stream.pipe(res)
+  )
+
+mainFile = if process.env.MODE == 'prod' then 'main.min.js' else 'main.js'
+fileLoader('/main', mainFile, 'application/javascript')
+fileLoader('/', 'html/index.html', 'text/html')
 
 app
   .use('/user', require('./routes/users'))

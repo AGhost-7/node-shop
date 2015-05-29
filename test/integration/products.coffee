@@ -9,7 +9,7 @@ describe 'Products', ->
   # I don't want a clean app for each bullet point, but starting a file of tests
   # with a clean DB is going to save me some headaches.
   before (done) ->
-    process.env['testMode'] = true
+    process.env.MODE = 'test'
     dbmocker( =>
       app = require('../../app')
       @server = app.listen(0)
@@ -78,6 +78,23 @@ describe 'Products', ->
           )
         )
         .end(done)
+
+    it 'should have pagination', (done) ->
+      @agent
+        .get('/product')
+        .end((err, res) =>
+          if err then throw err
+
+          items = res.body
+          @agent
+            .get('/product')
+            .query(querystring.stringify(page: 2))
+            .expect(200)
+            .expect((res) ->
+              res.body[0].id.should.be.equal(items[20].id)
+            )
+            .end(done)
+        )
 
   describe 'fields lister', ->
     it 'should give a list of all of the manufacturers', (done) ->

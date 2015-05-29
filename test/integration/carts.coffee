@@ -13,7 +13,7 @@ three = undefined
 describe 'carts', ->
 
   before (done) ->
-    process.env['testMode'] = true
+    process.env['MODE'] = 'test'
     dbmocker( =>
       app = require('../../app')
       #server = http.createServer(app)

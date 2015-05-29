@@ -10,7 +10,7 @@ describe 'users', ->
   # I don't want a clean app for each bullet point, but starting a file of tests
   # with a clean DB is going to save me some headaches.
   before (done) ->
-    process.env['testMode'] = true
+    process.env.MODE = 'test'
     dbmocker( =>
       app = require('../../app')
       @server = app.listen(0)

@@ -25,7 +25,7 @@ describe 'purchases', ->
           listToCart(@buyList, done)
         )
 
-    process.env['testMode'] = true
+    process.env.MODE = 'test'
     dbmocker( =>
       app = require('../../app')
       #server = http.createServer(app)

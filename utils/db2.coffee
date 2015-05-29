@@ -243,7 +243,7 @@ errorCodes =
 
 # For integration tests, it will connect to a different database.
 conString =
-  if process.env.testMode?
+  if process.env.MODE == 'test'
     'postgres://postgres:postgres@localhost:5432/testing_db'
   else
     'postgres://postgres:postgres@localhost:5432/node_shop'

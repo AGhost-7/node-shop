@@ -30,8 +30,10 @@ router
   )
   .catch(next)
 )
+#
 .get('/', (req, res, next) ->
   db((query) ->
+
     # Written this way it will be easy to add more optional params.
     fields = [
       { name: 'manufacturer', val: req.query.manufacturer }
@@ -49,9 +51,15 @@ router
         [sql, args]
     , ['SELECT * FROM products',[]])
 
+    if req.query.page?
+      sql += " LIMIT 20 OFFSET ($#{args.length + 1} - 1) * 20"
+      args.push(req.query.page)
+
     query(sql, args)
   )
   .then((rs) -> res.send(rs.rows))
   .catch(next)
 )
+
+
 module.exports = router
