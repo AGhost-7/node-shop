@@ -10,9 +10,3 @@ Currently using:
 * nodemon as the application reloader. Can't live without one.
 * ExpressJS framework. Simple, extensible, I like that.
 * node-postgres as the database client with a wrapper to use promises instead of "oh my gawd a pyramid".
-
-
-TODO list:
-* Filter out products which are at 0 quantity.
-* Minimum/maximum price filters.
-* Order by filter.

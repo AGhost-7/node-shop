@@ -96,6 +96,32 @@ describe 'Products', ->
             .end(done)
         )
 
+    it 'should have the abilitiy to order things...', (done) ->
+      @agent
+        .get('/product')
+        .query(querystring.stringify(order: 'price-asc'))
+        .expect(200)
+        .expect((res) ->
+          res.body.reduce((lastPrice, item) ->
+            item.price.should.be.greaterThan(lastPrice - 1)
+            item.price
+          , 0)
+        )
+        .end(done)
+
+    it 'hath filter prices', (done) ->
+      @agent
+        .get('/product')
+        .query(querystring.stringify(minprice: '50'))
+        .expect(200)
+        .expect((res) ->
+          res.body.forEach((item) ->
+            item.price.should.be.greaterThan(49)
+          )
+        )
+        .end(done)
+
+
   describe 'fields lister', ->
     it 'should give a list of all of the manufacturers', (done) ->
       @agent
