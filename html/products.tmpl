@@ -1,14 +1,41 @@
+<input ng-model="minprice" type="text" currency-model/>
+<input ng-model="maxprice" type="text" currency-model/>
+
+<select ng-options="c for c in categories" ng-model="category"></select>
+<select ng-options="m for m in manufacturers" ng-model="manufacturer"></select>
+
+<br />
 <table>
   <thead>
     <tr>
-    </th>Product Name</th>
-    <th>...</th>
+      <th>Product Name</th>
+      <th>Category</th>
+      <th>Manufacturer</th>
+      <th>Quantity</th>
+      <th>Price</th>
+      <th>Purchase</th>
     </tr>
   </thead>
   <tbody>
 
+    <tr ng-repeat="item in items">
+      <td>{{ item.name }}</td>
+      <td>{{ item.category }}</td>
+      <td>{{ item.manufacturer }}</td>
+      <td>{{ item.quantity }}</td>
+      <td>{{ item.price }}</td>
+      <td>
+        <input type="text" ng-model="amount" int-model/>
+        <button ng-click="purchase(item, amount)">Ok</button>
+      </td>
+    </tr>
   </tbody>
 </table>
+
+<button ng-click="page = page - 1">Previous page</button>
+
+<button ng-click="page = page + 1">Next page</button>
+
 <p>
   Go to <a href="#home">home</a>
 </p>

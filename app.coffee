@@ -24,7 +24,8 @@ fileLoader = (url, dir, type) ->
   )
 
 mainFile = if process.env.MODE == 'prod' then 'main.min.js' else 'main.js'
-fileLoader('/main', mainFile, 'application/javascript')
+fileLoader('/main', 'main.js', 'application/javascript')
+fileLoader('/main.js.map', 'main.js.map', 'application/javascript')
 fileLoader('/', 'html/index.html', 'text/html')
 
 app

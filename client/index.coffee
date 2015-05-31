@@ -1,6 +1,9 @@
 
-angular
-.module('node-shop', ['ngRoute'])
+app = angular.module('node-shop', ['ngRoute'])
+console.log('hello world')
+
+
+app
 .config(['$routeProvider', ($routeProvider) ->
   $routeProvider
     .when('/home',
@@ -12,18 +15,4 @@ angular
       controller: 'productCtrl'
     )
     .otherwise(redirectTo: '/home')
-])
-.controller('homeCtrl', ['$scope', ($scope) ->
-  $scope.greet = 'hello from Angular!'
-])
-.controller('productCtrl', ['$scope', '$routeParams', '$http', ($scope, $routeParams, $http) ->
-  $scope.page = $routeParam.page ? 1
-
-  $scope.search = ->
-    $http(method: 'GET', url: '/product', data: { page: $scope.page })
-      .success((data) ->
-        $scope.items = data
-        $scope.digest()
-      )
-
 ])
