@@ -121,6 +121,17 @@ describe 'Products', ->
         )
         .end(done)
 
+    it 'shalt filter by name', (done) ->
+      @agent
+        .get('/product')
+        .query(querystring.stringify(name: 'Roland'))
+        .expect(200)
+        .expect((res) ->
+          res.body.forEach((item) ->
+            item.name.indexOf('Roland').should.not.be.equal(-1)
+          )
+        )
+        .end(done)
 
   describe 'fields lister', ->
     it 'should give a list of all of the manufacturers', (done) ->

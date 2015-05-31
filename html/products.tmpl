@@ -1,8 +1,22 @@
-<input ng-model="minprice" type="text" currency-model/>
-<input ng-model="maxprice" type="text" currency-model/>
+<p>
+  <label>Minimum Price</label>
+  <input ng-model="minprice" type="text" currency-model/>
+</p>
 
-<select ng-options="c for c in categories" ng-model="category"></select>
-<select ng-options="m for m in manufacturers" ng-model="manufacturer"></select>
+<p>
+  <label>Maximum Price</label>
+  <input ng-model="maxprice" type="text" currency-model/>
+</p>
+
+<p>
+  <label>Category</label>
+  <select ng-options="c for c in categories" ng-model="category"></select>
+</p>
+
+<p>
+  <label>Manufacturers</label>
+  <select ng-options="m for m in manufacturers" ng-model="manufacturer"></select>
+</p>
 
 <br />
 <table>
@@ -32,9 +46,9 @@
   </tbody>
 </table>
 
-<button ng-click="page = page - 1">Previous page</button>
+<button ng-click="changePage(-1)">Previous page</button>
 
-<button ng-click="page = page + 1">Next page</button>
+<button ng-click="changePage(1)">Next page</button>
 
 <p>
   Go to <a href="#home">home</a>

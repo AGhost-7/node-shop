@@ -1,7 +1,5 @@
 
 app = angular.module('node-shop', ['ngRoute'])
-console.log('hello world')
-
 
 app
 .config(['$routeProvider', ($routeProvider) ->

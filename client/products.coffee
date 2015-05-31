@@ -1,37 +1,36 @@
 
 productCtrl = ($scope, $routeParams, $http) ->
+
   $scope.page = $routeParams.page ? 1
   $scope.manufacturers = []
   $scope.categories = []
 
   $scope.foo = ['a', 'b', 'c']
-  paramNames = ['page', 'minprice', 'maxprice', 'manufacturer', 'category', 'order']
-  $scope.$watch('page', -> console.log('page changed'))
+  watchParams = ['minprice', 'maxprice', 'manufacturer', 'category', 'order']
+  paramNames = watchParams.concat('page')
 
-  $scope.search = ->
-    console.log('search...')
+  search = ->
     params = {}
     for name in paramNames
-      params[name] = $scope[name]
+      if $scope[name]? && $scope[name] != ''
+        params[name] = $scope[name]
     $http(method: 'GET', url: '/product', params: params)
       .success((data) ->
-        console.log(data)
         $scope.items = data
       )
 
-  $scope.search()
+  for name in watchParams
+    $scope.$watch(name, (n, o)->
+      if n != o
+        $scope.page = 1
+        search()
+    )
+    $scope.$watch('page', search)
 
   $scope.purchase = (item, amount) ->
     console.log(item, amount)
 
-  for name in paramNames
-    $scope.$watch(name, $scope.search)
 
-  # reapply = ->
-  #   if $scope.$$phase
-  #     setTimeout(reapply, 300)
-  #   else
-  #     $scope.$apply()
 
 
 
@@ -46,6 +45,10 @@ productCtrl = ($scope, $routeParams, $http) ->
     .success((data) ->
       $scope.categories = [undefined].concat(data)
     )
+
+  $scope.changePage = (i) ->
+    if $scope.page + i > 0 then $scope.page += i
+
 
 
 app.controller('productCtrl', ['$scope', '$routeParams', '$http', productCtrl])

@@ -40,6 +40,11 @@ router
       { name: 'category', val: req.query.category, op: '=' }
       { name: 'price', val: req.query.minprice, op: '>=' }
       { name: 'price', val: req.query.maxprice, op: '<=' }
+      {
+        name: 'name'
+        val: if req.query.name? then '%' + req.query.name + '%' else undefined
+        op: 'LIKE'
+      }
     ]
 
     [sql, args] = fields.reduce(([sql, args], field) ->
