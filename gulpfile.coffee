@@ -10,6 +10,9 @@ files = [
   'masks.coffee'
   'home.coffee'
   'products.coffee'
+  'login.coffee'
+  'nav.coffee'
+  'cart.coffee'
 ].map((f) -> 'client/' + f )
 
 toJs = (transforms) ->

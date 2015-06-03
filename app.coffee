@@ -16,6 +16,7 @@ app
   .use(require('cookie-parser')())
   .use('/html', express.static(path.join(__dirname, 'html')))
 
+# N.b., figure out caching for prod mode.
 fileLoader = (url, dir, type) ->
   app.get(url, (req, res) ->
     stream = fs.createReadStream(path.join(__dirname, dir))
@@ -27,6 +28,7 @@ mainFile = if process.env.MODE == 'prod' then 'main.min.js' else 'main.js'
 fileLoader('/main', 'main.js', 'application/javascript')
 fileLoader('/main.js.map', 'main.js.map', 'application/javascript')
 fileLoader('/', 'html/index.html', 'text/html')
+fileLoader('/main.css', 'main.css', 'text/css')
 
 app
   .use('/user', require('./routes/users'))

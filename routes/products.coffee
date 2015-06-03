@@ -43,7 +43,7 @@ router
       {
         name: 'name'
         val: if req.query.name? then '%' + req.query.name + '%' else undefined
-        op: 'LIKE'
+        op: 'ILIKE'
       }
     ]
 

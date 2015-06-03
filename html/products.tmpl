@@ -1,24 +1,25 @@
-<p>
-  <label>Minimum Price</label>
-  <input ng-model="minprice" type="text" currency-model/>
-</p>
+<div class="search-box">
+  <p>
+    <label>Product Name</label>
+    <input id="name" ng-model="name" type="text"/>
+  </p>
+  <p>
+    <label>Minimum Price</label>
+    <input ng-model="minprice" type="text" currency-model/>
 
-<p>
-  <label>Maximum Price</label>
-  <input ng-model="maxprice" type="text" currency-model/>
-</p>
+    <label>Maximum Price</label>
+    <input ng-model="maxprice" type="text" currency-model/>
+  </p>
+  <p>
+    <label >Category</label>
+    <select ng-options="c for c in categories" ng-model="category"></select>
 
-<p>
-  <label>Category</label>
-  <select ng-options="c for c in categories" ng-model="category"></select>
-</p>
+      <label >Manufacturers</label>
+      <select  ng-options="m for m in manufacturers" ng-model="manufacturer"></select>
+  </p>
 
-<p>
-  <label>Manufacturers</label>
-  <select ng-options="m for m in manufacturers" ng-model="manufacturer"></select>
-</p>
+</div>
 
-<br />
 <table>
   <thead>
     <tr>
@@ -39,8 +40,9 @@
       <td>{{ item.quantity }}</td>
       <td>{{ item.price }}</td>
       <td>
-        <input type="text" ng-model="amount" int-model/>
-        <button ng-click="purchase(item, amount)">Ok</button>
+        <select ng-options="i for i in range(1, item.quantity)"
+            ng-model="amount" ng-change="purchase(item, amount)">
+        </select>
       </td>
     </tr>
   </tbody>

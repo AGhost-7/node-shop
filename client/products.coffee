@@ -5,8 +5,7 @@ productCtrl = ($scope, $routeParams, $http) ->
   $scope.manufacturers = []
   $scope.categories = []
 
-  $scope.foo = ['a', 'b', 'c']
-  watchParams = ['minprice', 'maxprice', 'manufacturer', 'category', 'order']
+  watchParams = ['name', 'minprice', 'maxprice', 'manufacturer', 'category', 'order']
   paramNames = watchParams.concat('page')
 
   search = ->
@@ -25,14 +24,23 @@ productCtrl = ($scope, $routeParams, $http) ->
         $scope.page = 1
         search()
     )
-    $scope.$watch('page', search)
+  $scope.$watch('page', search)
 
   $scope.purchase = (item, amount) ->
-    console.log(item, amount)
+    $http(
+      method: 'POST'
+      url: "/cart/#{item.id}/#{amount}"
+    )
+    .success((data) =>
+      item.quantity -= amount
+      if item.quantity == 0
+        $scope.items = $scope.items.filter((e) -> e.id != item.id)
+      else
+        # Make it so that the dropdown goes back to its original state
+        this.amount = undefined
+    )
 
-
-
-
+  $scope.range = (from, to) -> [undefined].concat([from..to])
 
   $http
     .get('/product/manufacturer')

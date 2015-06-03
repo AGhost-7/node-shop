@@ -1,0 +1,17 @@
+<p nf-if="error">
+  {{error}}
+</p>
+<p>
+  <label>Name</label><br />
+  <input type="text" ng-model="name"/>
+</p>
+<p>
+  <label>Password</label><br />
+  <input type="password" ng-model="password"/>
+</p>
+
+<p>
+  <button ng-click="login(name, password)">Login</button>
+</p>
+
+<a href="#home">Back</a>

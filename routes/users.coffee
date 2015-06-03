@@ -132,7 +132,7 @@ router
                   .then(({rows: [row]}) ->
                     res
                       .cookie('token', row.value)
-                      .send(message: "Login successful")
+                      .send(message: "Login successful", name: req.body.name)
                   )
               else
                 res.status(400).send(message: "Failed authentication.")
