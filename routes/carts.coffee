@@ -88,7 +88,6 @@ router
       )
       .catch(next)
 )
-
 .delete('/:id', (req, res, next) ->
   {params: {id}, cookies: {token}} = req
   if not id?
@@ -103,15 +102,34 @@ router
               DELETE FROM held_products
               WHERE user_id = $1 AND id = $2
               RETURNING quantity, product_id
+            ),
+            ups AS (
+              UPDATE products
+              SET quantity = products.quantity + unheld_products.quantity
+              FROM unheld_products
+              WHERE products.id = unheld_products.product_id
+            ),
+            subtotal AS (
+              SELECT sum(held_products.quantity * price) AS subtotal
+              FROM held_products
+              INNER JOIN products
+                ON products.id = held_products.product_id
+              WHERE user_id = $1
+            ),
+            tax AS (
+              SELECT round(subtotal * 0.13, 2) AS tax FROM subtotal
             )
-            UPDATE products
-            SET quantity = products.quantity + unheld_products.quantity
-            FROM unheld_products
-            WHERE products.id = unheld_products.product_id
+            SELECT subtotal, tax, subtotal + tax AS total
+            FROM subtotal, tax, unheld_products
             ', [userId, id])
-          .then(({rowCount}) ->
+          .then(({rows: [row], rowCount}) ->
             if rowCount > 0
-              res.status(200).send(message: 'Entry was removed.')
+              res.status(200).send(
+                message: 'Entry was removed.'
+                subtotal: row.subtotal
+                tax: row.tax
+                total: row.total
+              )
             else
               res
                 .status(400)

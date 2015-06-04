@@ -56,3 +56,15 @@ table td > select {
 .search-box input#name {
   width: 74%;
 }
+
+.remove-btn {
+  background: rgb(160, 90, 90);
+  border-color: rgb(100, 10, 10);
+  border-radius: 3px;
+  color: rgb(250, 200, 200);
+  float: right;
+}
+
+.remove-btn:active {
+  background: rgb(140, 70, 70);
+}

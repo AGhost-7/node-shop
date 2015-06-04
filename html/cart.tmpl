@@ -18,7 +18,7 @@
       <td>{{ item.quantity }}</td>
       <td>{{ item.price | currency}}</td>
       <td>
-        <button ng-click="remove(item)">X</button>
+        <button class="remove-btn" ng-click="remove(item, $index)">X</button>
       </td>
     </tr>
 
