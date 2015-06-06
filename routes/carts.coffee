@@ -69,8 +69,7 @@ router
               res.status(400).send(message: 'Not enough in stock.')
             else
               query('
-                  WITH modified_prod AS
-                  (
+                  WITH modified_prod AS (
                     UPDATE products
                     SET quantity = quantity - $3
                     WHERE products.id = $1
@@ -89,7 +88,7 @@ router
       .catch(next)
 )
 .delete('/:id', (req, res, next) ->
-  {params: {id}, cookies: {token}} = req
+  {params: {id}} = req
   if not id?
     res
       .status(400)
@@ -97,6 +96,47 @@ router
   else
     db((query) ->
       User.ifLoggedIn(req, res, query, (userId) ->
+        query('
+            WITH unheld_products AS (
+              DELETE FROM held_products
+              WHERE user_id = $1 AND id = $2
+              RETURNING quantity, product_id
+            )
+            UPDATE products
+            SET quantity = products.quantity + unheld_products.quantity
+            FROM unheld_products
+            WHERE products.id = unheld_products.product_id
+            ', [userId, id])
+            .then(({rowCount}) ->
+              if rowCount > 0
+                query('
+                    WITH subtotal AS (
+                      SELECT sum(held_products.quantity * price) AS subtotal
+                      FROM held_products
+                      INNER JOIN products
+                        ON products.id = held_products.product_id
+                      WHERE user_id = $1
+                    ),
+                    tax AS (
+                      SELECT round(subtotal * 0.13, 2) AS tax FROM subtotal
+                    )
+                    SELECT subtotal, tax, subtotal + tax AS total
+                    FROM subtotal, tax
+                    ', [userId])
+                  .then(({rows: [row]}) ->
+                    res.status(200).send(
+                      message: 'Entry was removed.'
+                      subtotal: row.subtotal || 0.0
+                      tax: row.tax || 0.0
+                      total: row.total || 0.0
+                    )
+                  )
+              else
+                res
+                  .status(400)
+                  .send(message: 'Entry was not found and could not be removed.')
+            )
+        ###
         query('
             WITH unheld_products AS (
               DELETE FROM held_products
@@ -135,6 +175,7 @@ router
                 .status(400)
                 .send(message: 'Entry was not found and could not be removed.')
           )
+        ###
       )
     )
     .catch(next)

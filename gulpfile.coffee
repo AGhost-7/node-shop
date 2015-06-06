@@ -33,5 +33,5 @@ gulp.task('watch', ->
 )
 
 gulp.task('build', ->
-  toJs((stream) -> stream .pipe(uglify()) )
+  toJs((stream) -> stream.pipe(uglify()) )
 )

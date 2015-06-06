@@ -85,6 +85,7 @@ describe 'carts', ->
         .end(done)
 
   cartItems = undefined
+  subtotal = undefined
 
   describe 'Viewing', ->
 
@@ -92,22 +93,28 @@ describe 'carts', ->
       @agent
         .get('/cart')
         .expect(200)
-        .expect(({ body: { items } }) ->
+        .expect(({ body: { items, subtotal: sub } }) ->
           items.length.should.equal(2)
           items.should.containDeep([
             { product_id: one.id, quantity: 1 }
             { product_id: three.id, quantity: 3 }
           ])
           cartItems = items
+          subtotal = sub
         )
         .end(done)
 
   describe 'removal', ->
 
-    it 'should gimme a 200', (done) ->
+    it 'should gimme a 200 with adjusted total', (done) ->
+      rmv = cartItems[0]
       @agent
-        .delete('/cart/' + cartItems[0].id)
+        .delete('/cart/' + rmv.id)
         .expect(200)
+        .expect((res) ->
+          substracted = subtotal - (rmv.quantity * rmv.price)
+          Number(res.body.subtotal).should.be.eql(substracted)
+        )
         .end(done)
 
     it 'should no longer be in the cart list', (done) ->
@@ -127,6 +134,7 @@ describe 'carts', ->
           res.body.quantity.should.equal(cartItems[0].quantity)
         )
         .end(done)
+
 
     it 'should increase products if account gets deleted', (done) ->
       @agent

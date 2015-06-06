@@ -128,7 +128,7 @@ describe 'Products', ->
         .expect(200)
         .expect((res) ->
           res.body.forEach((item) ->
-            item.name.indexOf('Roland').should.not.be.equal(-1)
+            item.name.toLowerCase().indexOf('roland').should.not.be.equal(-1)
           )
         )
         .end(done)

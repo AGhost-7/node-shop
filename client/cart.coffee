@@ -14,7 +14,6 @@ cartCtrl = ($scope, $http) ->
       .delete('/cart/' + item.id)
       .success((res) ->
         $scope.items.splice(index, 1)
-
         $scope.subtotal = res.subtotal
         $scope.tax = res.tax
         $scope.total = res.total

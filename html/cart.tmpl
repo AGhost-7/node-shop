@@ -1,4 +1,5 @@
-<table>
+<br/>
+<table class="cart-table" ng-if="items.length > 0">
   <thead>
     <tr>
       <th>Product Name</th>
@@ -6,12 +7,13 @@
       <th>Manufacturer</th>
       <th>Amount</th>
       <th>Price</th>
-      <th>Remove</th>
+
     </tr>
   </thead>
   <tbody>
 
-    <tr ng-repeat="item in items">
+    <tr ng-repeat="item in items"
+        ng-class='{"last-elem": $index == items.length - 1}'>
       <td>{{ item.name }}</td>
       <td>{{ item.category }}</td>
       <td>{{ item.manufacturer }}</td>
@@ -22,18 +24,26 @@
       </td>
     </tr>
 
-    <tr>
+    <tr class="subtotal">
       <td>Subtotal</td>
+      <td></td><td></td><td></td>
       <td>{{subtotal | currency}}</td>
     </tr>
-    <tr>
+
+    <tr class="tax">
       <td>Tax</td>
+      <td></td><td></td><td></td>
       <td>{{tax | currency}}</td>
     </tr>
-    <tr>
+
+    <tr class="total">
       <td>Total</td>
+      <td></td><td></td><td></td>
       <td>{{total | currency}}</td>
     </tr>
 
   </tbody>
 </table>
+<h3 class="empty-cart" ng-if="items.length == 0">
+  Cart empty
+</h3>
