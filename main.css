@@ -75,7 +75,7 @@ table td > select {
 }
 
 /* Message you get when the cart is empty */
-.empty-cart {
+.empty {
   text-align: center;
   margin: 40px;
   color: grey;
@@ -116,4 +116,22 @@ table td > select {
 }
 .cart-table .subtotal {
   border-top: 3px solid rgb(200, 200, 200);
+}
+.cart-table .purchase {
+  margin-top: 8px;
+}
+
+.receipt {
+  margin-top: 5px;
+}
+
+.receipt label { font-weight: 600; }
+.receipt .items {
+  background: rgb(225, 225, 225);
+  padding: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+.receipt .items > div {
+  margin: 5px;
 }

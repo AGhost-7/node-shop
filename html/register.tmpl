@@ -1,0 +1,24 @@
+
+<p ng-if="error">{{error}}</p>
+<p>
+  <label>Name</label><br/>
+  <input type="text" ng-model="name" />
+</p>
+
+<p>
+  <label>Password</label><br/>
+  <input type="password" ng-model="password" />
+</p>
+<p>
+  <label>Password (Repeat)</label><br/>
+  <input type="password" ng-model="password2" />
+</p>
+<p>
+  <label>Email</label><br/>
+  <input type="email" ng-model="email" />
+</p>
+<p>
+  <button ng-click="register()">Register</button>
+</p>
+
+<a href="#home">Back</a>

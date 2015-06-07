@@ -41,9 +41,22 @@
       <td></td><td></td><td></td>
       <td>{{total | currency}}</td>
     </tr>
-
+    <tr>
+      <td></td><td></td>
+      <td style="padding-top: 8px">
+        <select style=";height: 21px" ng-model="method" ng-options="m for m in methods">
+        </select>
+      </td>
+      <td></td>
+      <td>
+        <button class="purchase" ng-click="purchase(method)">Purchase</button>
+      </td>
+    </tr>
   </tbody>
 </table>
-<h3 class="empty-cart" ng-if="items.length == 0">
+<p ng-if="error">
+  {{error}}
+</p>
+<h3 class="empty" ng-if="items.length == 0">
   Cart empty
 </h3>

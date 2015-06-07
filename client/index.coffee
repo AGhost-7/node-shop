@@ -20,13 +20,43 @@ app
       templateUrl: 'html/cart.tmpl'
       controller: 'cartCtrl'
     )
+    .when('/register'
+      templateUrl: 'html/register.tmpl'
+      controller: 'registerCtrl'
+    )
+    .when('/purchases'
+      templateUrl: 'html/purchases.tmpl'
+      controller: 'purchasesCtrl'
+    )
     .otherwise(redirectTo: '/home')
 
 ])
-.run(['$rootScope', '$http', ($rootScope, $http) ->
+.run(['$rootScope', '$http', '$location', ($rootScope, $http, $location) ->
   $rootScope.username = undefined
 
   $http
     .get('/user')
     .success((data) -> $rootScope.username = data.name)
+
+  permissions =
+    logged: ['purchases', 'cart', 'product', 'home']
+    notLogged: ['login', 'home', 'product', 'register']
+
+  $rootScope.$on('$locationChangeStart', (ev, newLoc, oldLoc) ->
+    loc = newLoc.substring(newLoc.lastIndexOf('/') + 1)
+    prevent = false
+    if $rootScope.username?
+      if !permissions.logged.some((elem) -> loc == elem)
+        prevent = true
+    else
+      # user isn't logged in
+      if !permissions.notLogged.some((elem) -> loc == elem)
+        prevent = true
+        ev.preventDefault()
+
+    if prevent
+      ev.preventDefault()
+      if newLoc == oldLoc
+        $location.path('/home')
+  )
 ])

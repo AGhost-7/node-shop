@@ -16,4 +16,5 @@ loginCtrl = ($scope, $http, $location, $rootScope) ->
       $scope.error = data.message
     )
 
-app.controller('loginCtrl', ['$scope', '$http', '$location', '$rootScope', loginCtrl])
+app.controller('loginCtrl',
+    ['$scope', '$http', '$location', '$rootScope', loginCtrl])

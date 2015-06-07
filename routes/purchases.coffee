@@ -25,6 +25,7 @@ router
               items: _.map(rw, (r) ->
                 _.omit(r, ['id', 'subtotal', 'tax', 'user_id', 'stamp', 'method', 'receipt_id'])
               )
+              method: rw[0].method
               subtotal: rw[0].subtotal
               tax: rw[0].tax
               total: rw[0].total
@@ -73,44 +74,47 @@ router
 )
 # For now, that's all this is going to do.
 .post('/', (req, res, next) ->
-  db((query) ->
-    User.ifLoggedIn(req, res, query, (userId) ->
-      query('
-        WITH
-        	removed AS (
-        		DELETE FROM held_products
-        		USING products
-        		WHERE products.id = product_id
-        			AND user_id = $1
-        		RETURNING held_products.quantity, product_id, price
-        	),
-        	subtotal AS (
-        		SELECT sum(price * quantity) AS subtotal FROM removed
-        	),
-        	tax AS (
-        		SELECT round(subtotal * 0.13, 2) AS tax FROM subtotal
-        	),
-        	total AS (
-        		SELECT subtotal + tax AS total FROM subtotal, tax
-        	),
-        	receipt AS (
-        		INSERT INTO receipts(subtotal, tax, total, user_id, method)
-        		SELECT subtotal, tax, total, $1, $2
-        		FROM subtotal, tax, total
-        		RETURNING id
-        	),
-        	inserts AS (
-        		INSERT INTO purchases(receipt_id, product_id, quantity)
-        		SELECT receipt.id, product_id, quantity FROM removed, receipt
-        	)
-        SELECT * FROM receipt, subtotal, tax, total
-      ', [userId, req.body.method])
-        .then(({ rows }) ->
-          res.status(200).send(rows[0])
-        )
+  if not req.body.method?
+    res.status(400).send(message: 'Payment method must be specified.')
+  else
+    db((query) ->
+      User.ifLoggedIn(req, res, query, (userId) ->
+        query('
+          WITH
+          	removed AS (
+          		DELETE FROM held_products
+          		USING products
+          		WHERE products.id = product_id
+          			AND user_id = $1
+          		RETURNING held_products.quantity, product_id, price
+          	),
+          	subtotal AS (
+          		SELECT sum(price * quantity) AS subtotal FROM removed
+          	),
+          	tax AS (
+          		SELECT round(subtotal * 0.13, 2) AS tax FROM subtotal
+          	),
+          	total AS (
+          		SELECT subtotal + tax AS total FROM subtotal, tax
+          	),
+          	receipt AS (
+          		INSERT INTO receipts(subtotal, tax, total, user_id, method)
+          		SELECT subtotal, tax, total, $1, $2
+          		FROM subtotal, tax, total
+          		RETURNING id
+          	),
+          	inserts AS (
+          		INSERT INTO purchases(receipt_id, product_id, quantity)
+          		SELECT receipt.id, product_id, quantity FROM removed, receipt
+          	)
+          SELECT * FROM receipt, subtotal, tax, total
+        ', [userId, req.body.method])
+          .then(({ rows }) ->
+            res.status(200).send(rows[0])
+          )
+      )
     )
-  )
-  .catch(next)
+    .catch(next)
 )
 
 module.exports = router

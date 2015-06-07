@@ -1,0 +1,45 @@
+<div class="receipt" ng-repeat="receipt in receipts">
+  <br/>
+
+  <div>
+    <label>Date/Time: </label>
+    {{receipt.stamp}}
+  </div>
+
+  <div>
+    <label>Payment Method: </label>
+    {{receipt.method}}
+  </div>
+
+  <div>
+    <label>Subtotal: </label>
+    {{receipt.subtotal | currency}}
+  </div>
+
+  <div>
+    <label>Tax: </label>
+    {{receipt.tax | currency}}
+  </div>
+
+  <div>
+    <label>Total: </label>
+    {{receipt.total | currency}}
+  </div>
+  <br/>
+  <label>Items: </label>
+  <div class="items">
+    <div ng-repeat="item in receipt.items">
+        <div>Name: {{item.name}}</div>
+        <div>Manufacturer: {{item.manufacturer}}</div>
+        <div>Category: {{item.category}}</div>
+        <div>Price: {{item.price | currency}}</div>
+        <div>Quantity: {{item.quantity}}</div>
+        <span ng-if="$index < receipt.items.length - 1">-</span>
+    </div>
+
+  </div>
+</div>
+<h3 ng-if="receipts.length == 0" class="empty">
+  <br/>
+  You have no purchases.
+</h3>

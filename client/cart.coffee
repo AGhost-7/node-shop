@@ -1,6 +1,7 @@
 
 
 cartCtrl = ($scope, $http) ->
+  $scope.methods = ['Paypal', 'Credit']
 
   $http
     .get('/cart')
@@ -18,5 +19,15 @@ cartCtrl = ($scope, $http) ->
         $scope.tax = res.tax
         $scope.total = res.total
       )
+  
+  $scope.purchase = (method)->
+    $http
+      .post('/purchase', method: method)
+      .success((res) ->
+        $scope.items = []# don't need to update rest...
+        $scope.error = undefined
+      )
+      .error((res) -> $scope.error = res.message)
+
 
 app.controller('cartCtrl', ['$scope', '$http', cartCtrl])

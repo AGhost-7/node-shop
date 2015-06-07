@@ -101,7 +101,9 @@ router
                     VALUES ($1, $2, $3)
                     ', [tk, id, req.connection.remoteAddress])
                   .then( ->
-                    res.cookie('token', tk).send(message: 'Success')
+                    res
+                      .cookie('token', tk)
+                      .send(message: 'Success', name: req.body.name)
                   )
               )
 
@@ -111,7 +113,8 @@ router
 )
 .post('/login', (req, res, next) ->
   db((query) ->
-    query('SELECT * FROM users WHERE "name" = $1', [req.body.name])
+    query('SELECT * FROM users WHERE "name" = $1 AND deleted = false',
+        [req.body.name])
       .then(({rows}) ->
         if rows.length == 0
           res.status(400).send(message: "Username is invalid.")

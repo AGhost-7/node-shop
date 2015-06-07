@@ -11,6 +11,3 @@ Currently using:
 * ExpressJS framework. Simple, extensible, I like that.
 * node-postgres as the database client with a wrapper to use promises instead of "oh my gawd a pyramid".
 * AngularJs
-
-TODO:
-* Block user from going to certain routes when not logged in/when logged in.

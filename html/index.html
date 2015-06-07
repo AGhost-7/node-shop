@@ -8,6 +8,7 @@
     <ul class="navbar" ng-controller="navCtrl">
       <li><a href="#home">Home</a></li>
       <li ng-if="username"><a href="#cart">Cart</a></li>
+      <li ng-if="username"><a href="#purchases">Purchases</a></li>
       <li ng-if="!username"><a href="#register">Register</a></li>
       <li ng-if="username"><a ng-click="logout()" href="">Logout</a></li>
       <li ng-if="!username"><a href="#login">Login</a></li>

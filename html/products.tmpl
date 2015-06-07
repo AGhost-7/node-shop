@@ -28,7 +28,7 @@
       <th>Manufacturer</th>
       <th>Quantity</th>
       <th>Price</th>
-      <th>Purchase</th>
+      <th ng-if="username">Purchase</th>
     </tr>
   </thead>
   <tbody>
@@ -39,7 +39,7 @@
       <td>{{ item.manufacturer }}</td>
       <td>{{ item.quantity }}</td>
       <td>{{ item.price }}</td>
-      <td>
+      <td ng-if="username">
         <select ng-options="i for i in range(1, item.quantity)"
             ng-model="amount" ng-change="purchase(item, amount)">
         </select>
