@@ -1,27 +1,19 @@
 {
   "name": "shop-node",
   "version": "0.0.0",
-  "private": true,
+  "private": false,
   "scripts": {
-
-    "//": "Run all development shenanigans.",
     "start": "./bin/www",
-
-    "//": "This is the build/start command for deployment & bleh.",
-    "prod": "npm run build:client && MODE=prod ./bin/www",
-
-    "//": "Build client code with minification.",
+    "//": "Run in production mode as a daemon.",
+    "prod:start": "forever start -c coffee bin/www",
+    "prod:stop": "forever stop bin/www",
+    "//": "Restart the daemon",
+    "prod:restart": "forever restart bin/www",
     "build:client": "gulp build",
-
-    "//": "Watch for changes in the client folder",
     "watch:client": "gulp watch",
-
-    "//": "Restart node server if there are any changes done to the files.",
     "watch:node": "BLUEBIRD_DEBUG=1 nodemon -e coffee --ignore /public --ignore /test --ignore /client --ignore /.client",
-
     "//": "Run full setup for development.",
     "dev": "npm run watch:client & npm run watch:node",
-
     "test:unit": "mocha test/unit",
     "test:integration": "mocha test/integration",
     "debug:node": "coffee -mc */*.coffee && node-debug app.js"
@@ -33,6 +25,7 @@
     "cookie-parser": "~1.3.4",
     "debug": "~2.1.1",
     "express": "~4.12.2",
+    "forever": "^0.14.1",
     "lodash": "^3.9.3",
     "morgan": "~1.5.1",
     "pg": "^4.3.0",
@@ -52,5 +45,6 @@
     "should": "^6.0.1",
     "supertest": "^1.0.1",
     "uglify-js": "^2.4.23"
-  }
+  },
+  "engine": "node 0.12.2"
 }

@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# Version from apt is too old, then I tried compiling from master source, and
+# it didn't work any better... So need to install from the source branch I'm
+# using on my own computer.
+cd /tmp && \
+  git clone -b v0.12.2-release https://github.com/joyent/node.git && \  
+  ./configure && \
+  sudo make && \
+  sudo make install && \
+  echo "Installation completed, now cleaning..." && \
+  cd ../ && \
+  rm -r node && \
+  echo "NodeJs succesfully installed!"
