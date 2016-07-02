@@ -1,3 +1,2 @@
-#!/usr/bin/env coffee
-app = require('../app')
-app.listen(3000)
+#!/usr/bin/env node
+require('../app').listen(process.env.NODE_SHOP_PORT || 3000);
