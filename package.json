@@ -5,7 +5,7 @@
   "scripts": {
     "start": "./bin/www",
     "//": "Run in production mode as a daemon.",
-    "prod:start": "forever start -c coffee bin/www",
+    "prod:start": "forever start -c bin/www",
     "prod:stop": "forever stop bin/www",
     "//": "Restart the daemon",
     "prod:restart": "forever restart bin/www",
