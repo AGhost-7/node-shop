@@ -241,12 +241,14 @@ errorCodes =
   "XX001":{"name":"data_corrupted","class":"XX — Internal Error"}
   "XX002":{"name":"index_corrupted","class":"XX — Internal Error"}
 
+host = process.env.NODE_SHOP_DBHOST || 'localhost'
+
 # For integration tests, it will connect to a different database.
 conString =
   if process.env.MODE == 'test'
-    'postgres://postgres:postgres@localhost:5432/testing_db'
+    "postgres://postgres:postgres@#{host}:5432/testing_db"
   else
-    'postgres://postgres:postgres@localhost:5432/node_shop'
+    'postgres://postgres:postgres@#{host}:5432/node_shop'
 
 # (QueryFunction => Promise[A]): Promise[A]
 
