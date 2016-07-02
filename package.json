@@ -10,6 +10,7 @@
     "//": "Restart the daemon",
     "prod:restart": "forever restart bin/www",
     "build:client": "gulp build",
+		"prod:build": "npm run build:client && coffee -c */*.coffee",
     "watch:client": "gulp watch",
     "watch:node": "BLUEBIRD_DEBUG=1 nodemon -e coffee --ignore /public --ignore /test --ignore /client --ignore /.client",
     "//": "Run full setup for development.",
