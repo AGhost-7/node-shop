@@ -1,6 +1,6 @@
 db = require('../utils/db2')
 router = require('express').Router()
-User = require('../utils/user.coffee')
+User = require('../utils/user')
 _ = require('lodash')
 
 # View receipts with subtotal and total
